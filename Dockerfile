@@ -1,39 +1,51 @@
-FROM ubuntu:16.04
+FROM php:5.6-apache
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
-        apt-get -y install \
-        php-pear \
-        php7.0 \
-        php7.0-cgi \
-        php7.0-cli \
-        php7.0-common \
-        php7.0-curl \
-        php7.0-dev \
-        php7.0-gd \
-        php7.0-intl \
-        php7.0-mcrypt \
-        php7.0-mbstring \
-        php7.0-xmlrpc \
-        php7.0-mysql \
-        php7.0-pgsql \
-        php7.0-fpm \
-        php7.0-zip \
-        php7.0-ldap \
-        php7.0-soap \
-        unzip \
-        apt-transport-https \
-        unixodbc-dev \
-        build-essential \
-        libaio1 \
-        locales \
-        autoconf && apt-get clean
+    apt-get install -y \
+    gettext \
+    libcurl4-openssl-dev \
+    libpq-dev \
+    libmysqlclient-dev \
+    libldap2-dev \
+    libxslt-dev \
+    libxml2-dev \
+    libicu-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libmcrypt-dev \
+    libmemcached-dev \
+    zlib1g-dev \
+    libpng12-dev \
+    libaio1 \
+    unzip \
+    ghostscript \
+    locales
 
-RUN echo "en_US.UTF-8 UTF-8\nen_AU.UTF-8 UTF-8" > /etc/locale.gen
+RUN echo 'Generating locales..'
+RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
+RUN echo 'en_AU.UTF-8 UTF-8' >> /etc/locale.gen
 RUN locale-gen
-RUN mkdir -p /var/moodle/moodledata /var/moodle/phpunitdata /var/moodle/behatdata
-WORKDIR /usr/src
 
-RUN mkdir -p /var/moodle/moodledata /var/moodle/phpunitdata /var/moodle/behatdata
+RUN echo "Installing php extensions"
+RUN docker-php-ext-install -j$(nproc) \
+    intl \
+    mysqli \
+    opcache \
+    pgsql \
+    soap \
+    xsl \
+    xmlrpc \
+    zip
 
-WORKDIR /usr/src
-CMD php-fpm7.0 -R
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-install -j$(nproc) gd
+
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+RUN docker-php-ext-install -j$(nproc) ldap
+
+RUN pecl install solr memcache redis mongodb igbinary apcu-4.0.11 memcached-2.2.0
+RUN docker-php-ext-enable solr memcache memcached redis mongodb apcu igbinary
+
+RUN echo 'apc.enable_cli = On' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
+
+RUN apt-get clean
