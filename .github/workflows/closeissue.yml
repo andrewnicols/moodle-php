@@ -2,7 +2,7 @@ on:
   issues:
     types: [opened]
 jobs:
-  name: Close Issue
+  CloseIssue:
     runs-on: ubuntu-latest
     steps:
       - name: Close issue with a comment
