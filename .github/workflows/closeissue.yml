@@ -2,12 +2,14 @@ on:
   issues:
     types: [opened]
 jobs:
-  - name: Close Issue
-    uses: peter-evans/close-issue@v1
-    with:
-      comment: |
-        Hi,
+  name: Close Issue
+  steps:
+    - name: Close issue with a comment
+      uses: peter-evans/close-issue@v1
+      with:
+        comment: |
+          Hi,
 
-        Thanks for the patch. This repository is only a mirror of the official Moodle git repository at git.moodle.org. We don't deal with pull requests on GitHub but on the Moodle tracker. I'm closing this pull request, please progress it through the Moodle tracker instead.
+          Thanks for the patch. This repository is only a mirror of the official Moodle git repository at git.moodle.org. We don't deal with pull requests on GitHub but on the Moodle tracker. I'm closing this pull request, please progress it through the Moodle tracker instead.
 
-        See http://docs.moodle.org/dev/Process#Fixing_a_bug for more details.
+          See http://docs.moodle.org/dev/Process#Fixing_a_bug for more details.
