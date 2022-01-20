@@ -25,7 +25,7 @@ RUN apt-get update && \
         unixodbc-dev \
         build-essential \
         libaio1 \
-				locales \
+        locales \
         autoconf && apt-get clean
 
 RUN echo "en_US.UTF-8 UTF-8\nen_AU.UTF-8 UTF-8" > /etc/locale.gen
