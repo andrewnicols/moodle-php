@@ -3,6 +3,7 @@ on:
     types: [opened]
 jobs:
   name: Close Issue
+    runs-on: ubuntu-latest
     steps:
       - name: Close issue with a comment
         uses: peter-evans/close-issue@v1
